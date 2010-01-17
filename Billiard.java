@@ -42,7 +42,7 @@ public class Billiard extends JPanel implements ActionListener {
 			
 			ball[i] = new Ball (this,
 			                    (i + 0.5) * BilliardWindow.WIDTH / BALLS,
-			                    BilliardWindow.HEIGHT / 2.0,
+			                    BilliardWindow.HEIGHT / 2.0 + i * 2,
 			                    30,
 			                    new Speed (2 * (i - 2), 0));
 		}

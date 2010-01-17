@@ -147,7 +147,7 @@ public class Ball {
 		
 //		System.out.println("\t\t\tinizio: "+inizio);
 		
-		if (inizio < -1.0e-7)
+		if (inizio < (inizio - fine) / 2) // Large approximation, but it should work
 			return Double.POSITIVE_INFINITY;
 //			return 4000.0;
 		
