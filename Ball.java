@@ -16,7 +16,6 @@ import java.awt.geom.AffineTransform;
 
 public class Ball {
 	private Path2D shape;
-	private Color color;
 	
 	private double radius;
 	private double x;
@@ -24,16 +23,34 @@ public class Ball {
 	private Speed speed;
 	
 	private Billiard pool;
+	private boolean active = false;
+	private boolean light = true;
 	
+	private static Color lighter[] = {new Color (239, 41, 41), new Color (114, 159, 207),
+	                                  new Color (252, 234, 79), new Color (252, 175, 62),
+	                                  new Color (138, 226, 52), new Color (173, 127, 168),
+	                                  new Color (136, 138, 133), new Color (233, 185, 110)};
+	private static Color colors[] = {new Color (204, 0, 0), new Color (52, 101, 164),
+	                                 new Color (237, 212, 0), new Color (245, 121, 0),
+	                                 new Color (115, 210, 22), new Color (117, 80, 123),
+	                                 new Color (85, 87, 83), new Color (193, 125, 17)};
+	private static Color darker[] = {new Color (164, 0, 0), new Color (32, 74, 135),
+	                                 new Color (196, 160, 0), new Color (206, 92, 0),
+	                                 new Color (78, 154, 6), new Color (92, 53, 102),
+	                                 new Color (46, 52, 54), new Color (143, 89, 2)};
+	
+	private static final int COLOR_DELAY = 20;
 	private static int color_count = 0;
-	private static Color colors[] = {Color.RED};
+	private int color = 0;
+	private int count = 0;
+	
 	
 	// Constructor
 	public Ball (Billiard pool, double x, double y, double radius, Speed speed) {
 		this.x = x;
 		this.y = y;
 		this.radius = radius;
-		this.color = colors[color_count++%1];
+		this.color = color_count ++ % 8;
 		this.shape = new Path2D.Double (new Ellipse2D.Double (x - radius, y - radius, 2 * radius, 2 * radius));
 		this.speed = speed;
 		this.pool = pool;
@@ -97,24 +114,44 @@ public class Ball {
 	}
 	
 	// Paint
-	private int count = 0;
-	private boolean active = true;
-	private boolean normalizing = true;
-	
 	public void paint (Graphics2D g) {
-		if (active || normalizing) {
-			if (!normalizing) {
+		if (active && count == 0) {
+			if (light)
 				count ++;
-				if (count >= 40)
-					normalizing = true;
+			else
+				count --;
+		}
+		
+		if (count != 0) {
+			Color base = colors[color];
+			Color reference;
+			
+			if (count < 0)
+				reference = darker[color];
+			else
+				reference = lighter[color];
+			
+			if (light) {
+				count ++;
+				if (count >= COLOR_DELAY)
+					light = false;
 			}
 			else {
 				count --;
-				if (count <= 0)
-					normalizing = false;
+				if (count <= -COLOR_DELAY)
+					light = true;
 			}
+			
+			int red = base.getRed() + Math.abs(count) * (reference.getRed() - base.getRed()) / COLOR_DELAY;
+			int green = base.getGreen() + Math.abs(count) * (reference.getGreen() - base.getGreen()) / COLOR_DELAY;
+			int blue = base.getBlue() + Math.abs(count) * (reference.getBlue() - base.getBlue()) / COLOR_DELAY;
+			
+			g.setColor (new Color (red, green, blue));
 		}
-		g.setColor (new Color(color.getRed(), color.getGreen(), color.getBlue(), 255));
+		else {
+			g.setColor (colors[color]);
+		}
+
 		g.fill (shape);
 	}
 	

@@ -20,7 +20,7 @@ import java.awt.event.ActionEvent;
 
 public class Billiard extends JPanel implements ActionListener {
 	// Members
-	private static final int BALLS = 4;
+	private static final int BALLS = 12;
 	private Ball ball[];
 	
 	private double next_collision;
@@ -38,13 +38,15 @@ public class Billiard extends JPanel implements ActionListener {
 		
 		
 		ball = new Ball[BALLS];
+		double start = 0.0;
 		for (int i = 0; i < BALLS; i++) {
-			
 			ball[i] = new Ball (this,
-			                    (i + 0.5) * BilliardWindow.WIDTH / BALLS,
+//			                    (i + 0.5) * BilliardWindow.WIDTH / BALLS,
+			                    start + 20+i*3 + 5,
 			                    BilliardWindow.HEIGHT / 2.0 + i * 2,
-			                    30,
-			                    new Speed (2 * (i - 2), 0));
+			                    20+i*3,
+			                    new Speed (4, 0));
+			start += 2 * (20+i*3) + 5;
 		}
 	}
 	
