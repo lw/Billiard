@@ -25,14 +25,17 @@ public class Ball {
 	
 	private Billiard pool;
 	
+	private static int color_count = 0;
+	private static Color colors[] = {Color.RED};
+	
 	// Constructor
-	public Ball (double x, double y, double radius, Color color, Billiard pool) {
+	public Ball (Billiard pool, double x, double y, double radius, Speed speed) {
 		this.x = x;
 		this.y = y;
 		this.radius = radius;
-		this.color = color;
+		this.color = colors[color_count++%1];
 		this.shape = new Path2D.Double (new Ellipse2D.Double (x - radius, y - radius, 2 * radius, 2 * radius));
-		this.speed = new Speed (2.0, 2.0);
+		this.speed = speed;
 		this.pool = pool;
 	}
 	
@@ -68,25 +71,25 @@ public class Ball {
 		if (this.x < radius) {
 			this.x = 2 * radius - this.x;
 			speed.addX (-2 * speed.getX ());
-			pool.update_collision ();
+			pool.queue_collision_update ();
 		}
 		
 		if (this.x > BilliardWindow.WIDTH - radius) {
 			this.x = 2 * (BilliardWindow.WIDTH - radius) - this.x;
 			speed.addX (-2 * speed.getX ());
-			pool.update_collision ();
+			pool.queue_collision_update ();
 		}
 		
 		if (this.y < radius) {
 			this.y = 2 * radius - this.y;
 			speed.addY (-2 * speed.getY ());
-			pool.update_collision ();
+			pool.queue_collision_update ();
 		}
 		
 		if (this.y > BilliardWindow.HEIGHT - radius) {
 			this.y = 2 * (BilliardWindow.HEIGHT - radius) - this.y;
 			speed.addY (-2 * speed.getY ());
-			pool.update_collision ();
+			pool.queue_collision_update ();
 		}
 		
 		affine.translate (this.x, this.y);
@@ -94,8 +97,24 @@ public class Ball {
 	}
 	
 	// Paint
+	private int count = 0;
+	private boolean active = true;
+	private boolean normalizing = true;
+	
 	public void paint (Graphics2D g) {
-		g.setColor (color);
+		if (active || normalizing) {
+			if (!normalizing) {
+				count ++;
+				if (count >= 40)
+					normalizing = true;
+			}
+			else {
+				count --;
+				if (count <= 0)
+					normalizing = false;
+			}
+		}
+		g.setColor (new Color(color.getRed(), color.getGreen(), color.getBlue(), 255));
 		g.fill (shape);
 	}
 	
@@ -108,6 +127,7 @@ public class Ball {
 		
 		if (vel_x == 0 && vel_y == 0)
 			return Double.POSITIVE_INFINITY;
+//			return 1000.0;
 		
 		double a = vel_x * vel_x + vel_y * vel_y;
 		double b = 2 * vel_x * pos_x + 2 * vel_y * pos_y;
@@ -116,15 +136,23 @@ public class Ball {
 		
 		if (delta < 0)
 			return Double.POSITIVE_INFINITY;
+//			return 2000.0;
 		
 		double inizio = (- b - Math.sqrt (delta)) / (2 * a);
 		double fine = (- b + Math.sqrt (delta)) / (2 * a);
 
 		if (fine < 0)
 			return Double.POSITIVE_INFINITY;
+//			return 3000.0;
+		
+//		System.out.println("\t\t\tinizio: "+inizio);
+		
+		if (inizio < -1.0e-7)
+			return Double.POSITIVE_INFINITY;
+//			return 4000.0;
 		
 		if (inizio < 0)
-			return Double.POSITIVE_INFINITY;
+			return 0.0;
 		
 		return inizio;
 	}

@@ -1,0 +1,5 @@
+Billiard is a sandbox-like Java application in which a user defined number of balls runs around and collides.
+
+The simulation of collisions is done using continuos time, even if the concept of time in the application is discrete.
+
+It's possible to define mass and speed for each object, even when the simulation is active.

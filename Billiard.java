@@ -27,6 +27,8 @@ public class Billiard extends JPanel implements ActionListener {
 	private Ball first;
 	private Ball second;
 	
+	private boolean queued_collision_update = false;
+	
 	// Constructor
 	public Billiard () {
 		super ();
@@ -38,7 +40,11 @@ public class Billiard extends JPanel implements ActionListener {
 		ball = new Ball[BALLS];
 		for (int i = 0; i < BALLS; i++) {
 			
-			ball[i] = new Ball ((i + 0.5) * BilliardWindow.WIDTH / BALLS, BilliardWindow.HEIGHT / 2.0 + i*15, 30+i*15, new Color (255, 0, 0), this);
+			ball[i] = new Ball (this,
+			                    (i + 0.5) * BilliardWindow.WIDTH / BALLS,
+			                    BilliardWindow.HEIGHT / 2.0,
+			                    30,
+			                    new Speed (2 * (i - 2), 0));
 		}
 	}
 	
@@ -61,7 +67,7 @@ public class Billiard extends JPanel implements ActionListener {
 				}
 			}
 			passed += next_collision;
-			update_collision ();
+			collision_update ();	
 		}
 		next_collision += passed;
 		next_collision -= 1.0;
@@ -70,22 +76,31 @@ public class Billiard extends JPanel implements ActionListener {
 			ball[i].paint (g2d);
 		}
 		
-		
+		/*
 		g2d.setColor (new Color (0, 0, 0));
 		if (next_collision < 1000)
 			g2d.drawLine ((int)(first.getX() + first.getSpeed().getX() * next_collision),
 			              (int)(first.getY() + first.getSpeed().getY() * next_collision),
 			              (int)(second.getX() + second.getSpeed().getX() * next_collision),
 			              (int)(second.getY() + second.getSpeed().getY() * next_collision));
+		*/
 		
+		if (queued_collision_update)
+			collision_update ();
 	}
 	
 	// Update
-	public void update_collision () {
+	public void queue_collision_update () {
+		queued_collision_update = true;
+	}
+	
+	public void collision_update () {
+//		System.out.println ("\nStarting new collision calculation");
 		next_collision = Double.POSITIVE_INFINITY;
 		for (int i = 0; i < BALLS-1; i++) {
 			for (int j = i+1; j < BALLS; j++) {
 				double minimo = ball[i].next_collision (ball[j]);
+//				System.out.println ("Between "+(i+1)+" and "+(j+1)+"	"+minimo);
 				if (minimo < next_collision) {
 					next_collision = minimo;
 					first = ball[i];
@@ -93,6 +108,15 @@ public class Billiard extends JPanel implements ActionListener {
 				}
 			}
 		}
+		/*
+		if (next_collision < Double.POSITIVE_INFINITY) {
+			System.out.println ((int)next_collision+"	to collision between "+first.getRadius()+" and "+second.getRadius());
+		}
+		else {
+			System.out.println ("No collision");
+		}
+		*/
+		queued_collision_update = false;
 	}
 	
 	// New frame
