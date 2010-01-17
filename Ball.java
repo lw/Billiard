@@ -26,18 +26,18 @@ public class Ball {
 	private boolean active = false;
 	private boolean light = true;
 	
-	private static Color lighter[] = {new Color (239, 41, 41), new Color (114, 159, 207),
-	                                  new Color (252, 234, 79), new Color (252, 175, 62),
-	                                  new Color (138, 226, 52), new Color (173, 127, 168),
-	                                  new Color (136, 138, 133), new Color (233, 185, 110)};
-	private static Color colors[] = {new Color (204, 0, 0), new Color (52, 101, 164),
-	                                 new Color (237, 212, 0), new Color (245, 121, 0),
-	                                 new Color (115, 210, 22), new Color (117, 80, 123),
-	                                 new Color (85, 87, 83), new Color (193, 125, 17)};
-	private static Color darker[] = {new Color (164, 0, 0), new Color (32, 74, 135),
-	                                 new Color (196, 160, 0), new Color (206, 92, 0),
-	                                 new Color (78, 154, 6), new Color (92, 53, 102),
-	                                 new Color (46, 52, 54), new Color (143, 89, 2)};
+	public static final Color lighter[] = {new Color (239, 41, 41), new Color (114, 159, 207),
+	                                       new Color (252, 234, 79), new Color (252, 175, 62),
+	                                       new Color (138, 226, 52), new Color (173, 127, 168),
+	                                       new Color (136, 138, 133), new Color (233, 185, 110)};
+	public static final Color colors[] = {new Color (204, 0, 0), new Color (52, 101, 164),
+	                                      new Color (237, 212, 0), new Color (245, 121, 0),
+	                                      new Color (115, 210, 22), new Color (117, 80, 123),
+	                                      new Color (85, 87, 83), new Color (193, 125, 17)};
+	public static final Color darker[] = {new Color (164, 0, 0), new Color (32, 74, 135),
+	                                      new Color (196, 160, 0), new Color (206, 92, 0),
+	                                      new Color (78, 154, 6), new Color (92, 53, 102),
+	                                      new Color (46, 52, 54), new Color (143, 89, 2)};
 	
 	private static final int COLOR_DELAY = 20;
 	private static int color_count = 0;
@@ -71,6 +71,14 @@ public class Ball {
 	
 	public double getRadius () {
 		return radius;
+	}
+	
+	public int getColorId () {
+		return color;
+	}
+	
+	public void toggleActive () {
+		active = !active;
 	}
 	
 	// Move

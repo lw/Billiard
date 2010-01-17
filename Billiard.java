@@ -15,13 +15,10 @@ import java.awt.Color;
 import java.awt.RenderingHints;
 import java.awt.geom.Rectangle2D;
 
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-
-public class Billiard extends JPanel implements ActionListener {
+public class Billiard extends JPanel {
 	// Members
-	private static final int BALLS = 12;
-	private Ball ball[];
+	public static final int BALLS = 12;
+	public static Ball ball[];
 	
 	private double next_collision;
 	private Ball first;
@@ -34,8 +31,8 @@ public class Billiard extends JPanel implements ActionListener {
 		super ();
 		
 		setOpaque (true);
-		setBackground (new Color (66, 101, 17));
-		
+//		setBackground (new Color (66, 101, 17));
+		setBackground (new Color (255, 255, 255));		
 		
 		ball = new Ball[BALLS];
 		double start = 0.0;
@@ -119,10 +116,5 @@ public class Billiard extends JPanel implements ActionListener {
 		}
 		*/
 		queued_collision_update = false;
-	}
-	
-	// New frame
-	public void actionPerformed (ActionEvent e) {
-		repaint ();
 	}
 }

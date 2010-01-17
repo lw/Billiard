@@ -13,9 +13,13 @@ import javax.swing.Timer;
 import java.awt.Color;
 import java.awt.Dimension;
 
-public class BilliardWindow extends JFrame {
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+
+public class BilliardWindow extends JFrame implements ActionListener {
 	// Members
 	private Billiard content;
+	private Overlay overlay;
 	
 	public static final int WIDTH = 800;
 	public static final int HEIGHT = 600;
@@ -32,12 +36,18 @@ public class BilliardWindow extends JFrame {
 		         HEIGHT + getInsets ().top + getInsets ().bottom);
 		
 		content = new Billiard ();
-		getContentPane ().add (content);
-
-//		getContentPane ().addMouseListener (content);
-//		getContentPane ().addMouseMotionListener (content);
+		setContentPane (content);
 		
-		Timer timer = new Timer (10, content);
+		overlay = new Overlay ();
+		setGlassPane (overlay);
+		getGlassPane ().setVisible (true);
+
+		Timer timer = new Timer (10, this);
 		timer.start ();
+	}
+	
+	// New frame
+	public void actionPerformed (ActionEvent e) {
+		repaint ();
 	}
 }
