@@ -16,9 +16,6 @@ public class Ball {
 	private double radius;
 	private Speed speed;
 	
-	private boolean active = false;
-	private boolean light = true;
-	
 	public static final Color lighter[] = {new Color (239, 41, 41), new Color (114, 159, 207),
 	                                       new Color (252, 234, 79), new Color (252, 175, 62),
 	                                       new Color (138, 226, 52), new Color (173, 127, 168),
@@ -36,7 +33,6 @@ public class Ball {
 	private static int color_count = 0;
 	private int color = 0;
 	private int count = 0;
-	
 	
 	// Constructor
 	public Ball (double x, double y, double radius, Speed speed) {
@@ -77,10 +73,6 @@ public class Ball {
 		this.color = (color_id + 8) % 8;
 	}
 	
-	public void toggleActive () {
-		active = !active;
-	}
-	
 	// Move
 	public void move (double time) {
 		move (speed.getX () * time, speed.getY () * time);
@@ -117,78 +109,35 @@ public class Ball {
 	
 	// Paint
 	public void paint (Graphics2D g) {
-		if (active && count == 0) {
-			if (light)
-				count ++;
-			else
-				count --;
-		}
-		
-		if (count != 0) {
-			Color base = colors[color];
-			Color reference;
-			
-			if (count < 0)
-				reference = darker[color];
-			else
-				reference = lighter[color];
-			
-			if (light) {
-				count ++;
-				if (count >= COLOR_DELAY)
-					light = false;
-			}
-			else {
-				count --;
-				if (count <= -COLOR_DELAY)
-					light = true;
-			}
-			
-			int red = base.getRed() + Math.abs(count) * (reference.getRed() - base.getRed()) / COLOR_DELAY;
-			int green = base.getGreen() + Math.abs(count) * (reference.getGreen() - base.getGreen()) / COLOR_DELAY;
-			int blue = base.getBlue() + Math.abs(count) * (reference.getBlue() - base.getBlue()) / COLOR_DELAY;
-			
-			g.setColor (new Color (red, green, blue));
-		}
-		else {
-			g.setColor (colors[color]);
-		}
-
+		g.setColor (colors[color]);
 		g.fill (new Ellipse2D.Double (x - radius, y - radius, 2 * radius, 2 * radius));
 	}
 	
 	// Next collision
 	public double next_collision (Ball next) {
-		double pos_x = x - next.getX ();
-		double pos_y = y - next.getY ();
-		double vel_x = speed.getX () - next.getSpeed ().getX ();
-		double vel_y = speed.getY () - next.getSpeed ().getY ();
+		double d_x = getX() - next.getX ();
+		double d_y = getY() - next.getY ();
+		double d_vx = speed.getX () - next.getSpeed ().getX ();
+		double d_vy = speed.getY () - next.getSpeed ().getY ();
 		
-		if (vel_x == 0 && vel_y == 0)
+		if (d_vx == 0 && d_vy == 0)
 			return Double.POSITIVE_INFINITY;
-//			return 1000.0;
 		
-		double a = vel_x * vel_x + vel_y * vel_y;
-		double b = 2 * vel_x * pos_x + 2 * vel_y * pos_y;
-		double c = pos_x * pos_x + pos_y * pos_y - (radius + next.getRadius ()) * (radius + next.getRadius ());
-		double delta = b * b - 4 * a * c;
+		double a = d_vx * d_vx + d_vy * d_vy;
+		double b_mezzi = d_vx * d_x + d_vy * d_y;
+		double delta_quarti = Math.pow (radius + next.getRadius (), 2) * a - Math.pow (d_vx * d_y - d_vy * d_x, 2);
 		
-		if (delta < 0)
+		if (delta_quarti < 0)
 			return Double.POSITIVE_INFINITY;
-//			return 2000.0;
 		
-		double inizio = (- b - Math.sqrt (delta)) / (2 * a);
-		double fine = (- b + Math.sqrt (delta)) / (2 * a);
+		double inizio = (- b_mezzi - Math.sqrt (delta_quarti)) / a;
+		double fine = (- b_mezzi + Math.sqrt (delta_quarti)) / a;
 
 		if (fine < 0)
 			return Double.POSITIVE_INFINITY;
-//			return 3000.0;
-		
-//		System.out.println("\t\t\tinizio: "+inizio);
 		
 		if (inizio < (inizio - fine) / 2) // Large approximation, but it should work
 			return Double.POSITIVE_INFINITY;
-//			return 4000.0;
 		
 		if (inizio < 0)
 			return 0.0;
@@ -201,7 +150,7 @@ public class Ball {
 		move (speed.getX () * time, speed.getY () * time);
 		next.move (next.getSpeed ().getX () * time, next.getSpeed ().getY () * time);
 		
-		double theta = Math.atan2 (next.getY () - y, next.getX () - x);
+		double theta = Math.atan2 (next.getY () - getY(), next.getX () - getX());
 		
 		double first = speed.getComponent (theta);
 		double second = next.getSpeed ().getComponent (theta);

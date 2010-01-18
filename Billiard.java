@@ -17,7 +17,7 @@ import java.awt.geom.Rectangle2D;
 
 public class Billiard extends JPanel {
 	// Members
-	public static final int BALLS = 2;
+	public static final int BALLS = 12;
 	public static Ball ball[];
 	
 	private double next_collision;
@@ -31,7 +31,6 @@ public class Billiard extends JPanel {
 		super ();
 		
 		setOpaque (true);
-//		setBackground (new Color (66, 101, 17));
 		setBackground (new Color (255, 255, 255));		
 		
 		ball = new Ball[BALLS];
@@ -93,12 +92,10 @@ public class Billiard extends JPanel {
 	}
 	
 	public void collision_update () {
-//		System.out.println ("\nStarting new collision calculation");
 		next_collision = Double.POSITIVE_INFINITY;
 		for (int i = 0; i < BALLS-1; i++) {
 			for (int j = i+1; j < BALLS; j++) {
 				double minimo = ball[i].next_collision (ball[j]);
-//				System.out.println ("Between "+(i+1)+" and "+(j+1)+"	"+minimo);
 				if (minimo < next_collision) {
 					next_collision = minimo;
 					first = ball[i];
@@ -106,14 +103,7 @@ public class Billiard extends JPanel {
 				}
 			}
 		}
-		/*
-		if (next_collision < Double.POSITIVE_INFINITY) {
-			System.out.println ((int)next_collision+"	to collision between "+first.getRadius()+" and "+second.getRadius());
-		}
-		else {
-			System.out.println ("No collision");
-		}
-		*/
+		
 		queued_collision_update = false;
 	}
 }

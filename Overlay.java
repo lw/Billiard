@@ -16,7 +16,10 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.Stroke;
+import java.awt.BasicStroke;
 import java.awt.RenderingHints;
+import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.RoundRectangle2D;
 import java.awt.geom.Path2D;
@@ -28,6 +31,7 @@ import java.awt.event.MouseEvent;
 
 public class Overlay extends JPanel implements MouseListener, MouseMotionListener {
 	private Path2D shapes[];
+	private Path2D selector;
 	private Font font;
 	
 	private int active_ball = 0;
@@ -39,6 +43,8 @@ public class Overlay extends JPanel implements MouseListener, MouseMotionListene
 	private int second = -1;
 	private int count = 0;
 	private int fps = 0;
+	
+	private double angle = 0;
 	
 	// Utility
 	private void drawStringFromCenter (Graphics2D g, String str, double x, double y) {
@@ -60,6 +66,42 @@ public class Overlay extends JPanel implements MouseListener, MouseMotionListene
 			System.out.println ("File \"dejavu.ttf\" not valid");
 			font = new Font (Font.SANS_SERIF, Font.PLAIN, 12);
 		}
+	}
+	
+	// Draw selector
+	private void drawSelector (Graphics2D g) {
+		Stroke old_stroke = g.getStroke ();
+		
+		g.setStroke (new BasicStroke (4, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+		
+		int color_id = Billiard.ball[active_ball].getColorId();
+		int red = (int)((Ball.lighter[color_id].getRed() + Ball.darker[color_id].getRed()) / 2 +
+		                Math.sin (angle * 2) * (Ball.lighter[color_id].getRed() - Ball.darker[color_id].getRed()) / 2);
+		int green = (int)((Ball.lighter[color_id].getGreen() + Ball.darker[color_id].getGreen()) / 2 +
+		                  Math.sin (angle * 2) * (Ball.lighter[color_id].getGreen() - Ball.darker[color_id].getGreen()) / 2);
+		int blue = (int)((Ball.lighter[color_id].getBlue() + Ball.darker[color_id].getBlue()) / 2 +
+		                 Math.sin (angle * 2) * (Ball.lighter[color_id].getBlue() - Ball.darker[color_id].getBlue()) / 2);
+		g.setColor (new Color (red, green, blue));
+		
+		double x = Billiard.ball[active_ball].getX ();
+		double y = Billiard.ball[active_ball].getY ();
+		double radius = Billiard.ball[active_ball].getRadius ();
+		
+		double start = radius + 20 + 10 * Math.sin (angle * 2);
+		double end = radius + 40 + 10 * Math.sin (angle * 2);
+		
+		angle += Math.PI / 150;
+		
+		g.draw (new Line2D.Double (x + Math.cos (angle) * start, y + Math.sin (angle) * start,
+		                           x + Math.cos (angle) * end, y + Math.sin (angle) * end));
+		g.draw (new Line2D.Double (x + Math.cos (angle + Math.PI / 2) * start, y + Math.sin (angle + Math.PI / 2) * start,
+		                           x + Math.cos (angle + Math.PI / 2) * end, y + Math.sin (angle + Math.PI / 2) * end));
+		g.draw (new Line2D.Double (x + Math.cos (angle + Math.PI) * start, y + Math.sin (angle + Math.PI) * start,
+		                           x + Math.cos (angle + Math.PI) * end, y + Math.sin (angle + Math.PI) * end));
+		g.draw (new Line2D.Double (x + Math.cos (angle + 3 * Math.PI / 2) * start, y + Math.sin (angle + 3 * Math.PI / 2) * start,
+		                           x + Math.cos (angle + 3 * Math.PI / 2) * end, y + Math.sin (angle + 3 * Math.PI / 2) * end));
+		
+		g.setStroke (old_stroke);
 	}
 	
 	// Constructor
@@ -142,8 +184,6 @@ public class Overlay extends JPanel implements MouseListener, MouseMotionListene
 		
 		addMouseListener (this);
 		addMouseMotionListener (this);
-		
-		Billiard.ball[0].toggleActive ();
 	}
 	
 	public void paintComponent (Graphics g) {
@@ -153,6 +193,25 @@ public class Overlay extends JPanel implements MouseListener, MouseMotionListene
 		g2d.setRenderingHint (RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_SPEED);
 		super.paintComponent (g);
 		
+		g2d.setFont (font);
+		
+		// Draw the selector
+		drawSelector (g2d);
+		
+		// FPS
+		Calendar now = Calendar.getInstance();
+		if (now.get(Calendar.SECOND) != second) {
+			second = now.get(Calendar.SECOND);
+			fps = count;
+			count = 0;
+		}
+		
+		count ++;
+		
+		g2d.setColor (new Color (0, 0, 0));
+		g2d.drawString (fps+" FPS", 5, BilliardWindow.HEIGHT - 5);
+		
+		// Draw widget
 		g2d.setColor (new Color (0, 0, 0, 150));
 		g2d.fill (shapes[0]);
 		
@@ -176,7 +235,6 @@ public class Overlay extends JPanel implements MouseListener, MouseMotionListene
 		g2d.setColor (new Color (255, 255, 255));
 		g2d.draw (shapes[3]);
 		
-		g2d.setFont (font);
 		g2d.drawString ("Color", (int)shapes[4].getBounds2D().getMinX(), (int)shapes[4].getBounds2D().getMinY() - 5);
 		g2d.drawString ("Speed (X, Y)", (int)shapes[6].getBounds2D().getMinX(), (int)shapes[6].getBounds2D().getMinY() - 5);
 		g2d.drawString ("Mass", (int)shapes[10].getBounds2D().getMinX(), (int)shapes[10].getBounds2D().getMinY() - 5);
@@ -197,33 +255,16 @@ public class Overlay extends JPanel implements MouseListener, MouseMotionListene
 		
 		g2d.setColor (Ball.colors[Billiard.ball[active_ball].getColorId()]);
 		g2d.fill (shapes[3]);
-		
-		// FPS
-		Calendar now = Calendar.getInstance();
-		if (now.get(Calendar.SECOND) != second) {
-			second = now.get(Calendar.SECOND);
-			fps = count;
-			count = 0;
-		}
-		
-		count ++;
-		
-		g2d.setColor (new Color (0, 0, 0));
-		g2d.drawString (fps+" FPS", 5, BilliardWindow.HEIGHT - 5);
 	}
 	
 	public void mousePressed (MouseEvent e) {
 		if (shapes[1].contains (e.getX(), e.getY())) {
-			Billiard.ball[active_ball].toggleActive ();
 			active_ball += Billiard.BALLS - 1;
 			active_ball %= Billiard.BALLS;
-			Billiard.ball[active_ball].toggleActive ();
 		}
 		if (shapes[2].contains (e.getX(), e.getY())) {
-			Billiard.ball[active_ball].toggleActive ();
 			active_ball ++;
 			active_ball %= Billiard.BALLS;
-			Billiard.ball[active_ball].toggleActive ();
 		}
 		
 		if (shapes[4].contains (e.getX(), e.getY())) {

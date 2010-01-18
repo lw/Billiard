@@ -42,7 +42,7 @@ public class BilliardWindow extends JFrame implements ActionListener {
 		setGlassPane (overlay);
 		getGlassPane ().setVisible (true);
 
-		Timer timer = new Timer (10, this);
+		Timer timer = new Timer (20, this);
 		timer.start ();
 	}
 	
