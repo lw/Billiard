@@ -8,21 +8,14 @@
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Color;
-import java.awt.geom.Rectangle2D;
 import java.awt.geom.Ellipse2D;
-import java.awt.geom.Path2D;
-
-import java.awt.geom.AffineTransform;
 
 public class Ball {
-	private Path2D shape;
-	
-	private double radius;
 	private double x;
 	private double y;
+	private double radius;
 	private Speed speed;
 	
-	private Billiard pool;
 	private boolean active = false;
 	private boolean light = true;
 	
@@ -46,14 +39,12 @@ public class Ball {
 	
 	
 	// Constructor
-	public Ball (Billiard pool, double x, double y, double radius, Speed speed) {
+	public Ball (double x, double y, double radius, Speed speed) {
 		this.x = x;
 		this.y = y;
 		this.radius = radius;
 		this.color = color_count ++ % 8;
-		this.shape = new Path2D.Double (new Ellipse2D.Double (x - radius, y - radius, 2 * radius, 2 * radius));
 		this.speed = speed;
-		this.pool = pool;
 	}
 	
 	// Getters and Setters
@@ -73,8 +64,17 @@ public class Ball {
 		return radius;
 	}
 	
+	public void setRadius (double radius) {
+		if (radius > 0)
+			this.radius = radius;
+	}
+	
 	public int getColorId () {
 		return color;
+	}
+	
+	public void setColorId (int color_id) {
+		this.color = (color_id + 8) % 8;
 	}
 	
 	public void toggleActive () {
@@ -87,38 +87,32 @@ public class Ball {
 	}
 	
 	public void move (double x, double y) {
-		AffineTransform affine = new AffineTransform ();
-		affine.translate (-this.x, -this.y);
-		
 		this.x += x;
 		this.y += y;
 		
 		if (this.x < radius) {
 			this.x = 2 * radius - this.x;
 			speed.addX (-2 * speed.getX ());
-			pool.queue_collision_update ();
+			Billiard.queue_collision_update ();
 		}
 		
 		if (this.x > BilliardWindow.WIDTH - radius) {
 			this.x = 2 * (BilliardWindow.WIDTH - radius) - this.x;
 			speed.addX (-2 * speed.getX ());
-			pool.queue_collision_update ();
+			Billiard.queue_collision_update ();
 		}
 		
 		if (this.y < radius) {
 			this.y = 2 * radius - this.y;
 			speed.addY (-2 * speed.getY ());
-			pool.queue_collision_update ();
+			Billiard.queue_collision_update ();
 		}
 		
 		if (this.y > BilliardWindow.HEIGHT - radius) {
 			this.y = 2 * (BilliardWindow.HEIGHT - radius) - this.y;
 			speed.addY (-2 * speed.getY ());
-			pool.queue_collision_update ();
+			Billiard.queue_collision_update ();
 		}
-		
-		affine.translate (this.x, this.y);
-		shape.transform (affine);
 	}
 	
 	// Paint
@@ -160,7 +154,7 @@ public class Ball {
 			g.setColor (colors[color]);
 		}
 
-		g.fill (shape);
+		g.fill (new Ellipse2D.Double (x - radius, y - radius, 2 * radius, 2 * radius));
 	}
 	
 	// Next collision

@@ -17,14 +17,14 @@ import java.awt.geom.Rectangle2D;
 
 public class Billiard extends JPanel {
 	// Members
-	public static final int BALLS = 12;
+	public static final int BALLS = 2;
 	public static Ball ball[];
 	
 	private double next_collision;
 	private Ball first;
 	private Ball second;
 	
-	private boolean queued_collision_update = false;
+	private static boolean queued_collision_update = false;
 	
 	// Constructor
 	public Billiard () {
@@ -37,8 +37,7 @@ public class Billiard extends JPanel {
 		ball = new Ball[BALLS];
 		double start = 0.0;
 		for (int i = 0; i < BALLS; i++) {
-			ball[i] = new Ball (this,
-//			                    (i + 0.5) * BilliardWindow.WIDTH / BALLS,
+			ball[i] = new Ball (//(i + 0.5) * BilliardWindow.WIDTH / BALLS,
 			                    start + 20+i*3 + 5,
 			                    BilliardWindow.HEIGHT / 2.0 + i * 2,
 			                    20+i*3,
@@ -89,7 +88,7 @@ public class Billiard extends JPanel {
 	}
 	
 	// Update
-	public void queue_collision_update () {
+	public static void queue_collision_update () {
 		queued_collision_update = true;
 	}
 	
