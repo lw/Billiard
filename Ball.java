@@ -14,6 +14,7 @@ public class Ball {
 	private double x;
 	private double y;
 	private double radius;
+	private double mass;
 	private Speed speed;
 	
 	public static final Color lighter[] = {new Color (239, 41, 41), new Color (114, 159, 207),
@@ -32,15 +33,15 @@ public class Ball {
 	private static final int COLOR_DELAY = 20;
 	private static int color_count = 0;
 	private int color = 0;
-	private int count = 0;
 	
 	// Constructor
-	public Ball (double x, double y, double radius, Speed speed) {
+	public Ball (double x, double y, double radius, double mass, Speed speed) {
 		this.x = x;
 		this.y = y;
 		this.radius = radius;
-		this.color = color_count ++ % 8;
+		this.mass = mass;
 		this.speed = speed;
+		this.color = color_count ++ % 8;
 	}
 	
 	// Getters and Setters
@@ -63,6 +64,15 @@ public class Ball {
 	public void setRadius (double radius) {
 		if (radius > 0)
 			this.radius = radius;
+	}
+	
+	public double getMass () {
+		return mass;
+	}
+	
+	public void setMass (double mass) {
+		if (mass > 0)
+			this.mass = mass;
 	}
 	
 	public int getColorId () {
@@ -152,11 +162,17 @@ public class Ball {
 		
 		double theta = Math.atan2 (next.getY () - getY(), next.getX () - getX());
 		
-		double first = speed.getComponent (theta);
-		double second = next.getSpeed ().getComponent (theta);
+		double v_1 = speed.getComponent (theta);
+		double v_2 = next.getSpeed ().getComponent (theta);
 		
-		speed.addComponent (theta, -first + second);
-		next.getSpeed ().addComponent (theta, -second + first);
+		double m_1 = getMass ();
+		double m_2 = next.getMass ();
+		
+		double w_1 = ((m_1 - m_2) * v_1 + 2 * m_2 * v_2) / (m_1 + m_2);
+		double w_2 = ((m_2 - m_1) * v_2 + 2 * m_1 * v_1) / (m_1 + m_2);
+		
+		speed.addComponent (theta, - v_1 + w_1);
+		next.getSpeed ().addComponent (theta, - v_2 + w_2);
 		
 //		move (speed.getX () * (1.0 - time), speed.getY () * (1.0 - time));
 //		next.move (next.getSpeed ().getX () * (1.0 - time), next.getSpeed ().getY () * (1.0 - time));

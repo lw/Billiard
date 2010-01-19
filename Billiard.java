@@ -40,6 +40,7 @@ public class Billiard extends JPanel {
 			                    start + 20+i*3 + 5,
 			                    BilliardWindow.HEIGHT / 2.0 + i * 2,
 			                    20+i*3,
+			                    5 * (i+1),
 			                    new Speed (4, 0));
 			start += 2 * (20+i*3) + 5;
 		}

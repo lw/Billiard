@@ -246,10 +246,12 @@ public class Overlay extends JPanel implements MouseListener, MouseMotionListene
 		
 		// Show data
 		g2d.setColor (new Color (255, 255, 255));
-		drawStringFromCenter (g2d, (int)Billiard.ball[active_ball].getSpeed().getX()+"",
+		drawStringFromCenter (g2d, (int)(Billiard.ball[active_ball].getSpeed().getX()*100)/100.0+"",
 		                      shapes[6].getBounds2D().getMaxX() + 22.5, shapes[6].getBounds2D().getCenterY() - 2);
-		drawStringFromCenter (g2d, (int)Billiard.ball[active_ball].getSpeed().getY()+"",
+		drawStringFromCenter (g2d, (int)(Billiard.ball[active_ball].getSpeed().getY()*100)/100.0+"",
 		                      shapes[8].getBounds2D().getMaxX() + 22.5, shapes[8].getBounds2D().getCenterY() - 2);
+		drawStringFromCenter (g2d, Billiard.ball[active_ball].getMass()+"",
+		                      shapes[10].getBounds2D().getMaxX() + 22.5, shapes[10].getBounds2D().getCenterY() - 2);
 		drawStringFromCenter (g2d, Billiard.ball[active_ball].getRadius()+"",
 		                      shapes[12].getBounds2D().getMaxX() + 22.5, shapes[12].getBounds2D().getCenterY() - 2);
 		
@@ -290,6 +292,13 @@ public class Overlay extends JPanel implements MouseListener, MouseMotionListene
 		if (shapes[9].contains (e.getX(), e.getY())) {
 			Billiard.ball[active_ball].getSpeed ().addY (1.0);
 			Billiard.queue_collision_update ();
+		}
+		
+		if (shapes[10].contains (e.getX(), e.getY())) {
+			Billiard.ball[active_ball].setMass (Billiard.ball[active_ball].getMass() - 1.0);
+		}
+		if (shapes[11].contains (e.getX(), e.getY())) {
+			Billiard.ball[active_ball].setMass (Billiard.ball[active_ball].getMass() + 1.0);
 		}
 		
 		if (shapes[12].contains (e.getX(), e.getY())) {
