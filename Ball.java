@@ -13,8 +13,8 @@ import java.awt.geom.Ellipse2D;
 public class Ball {
 	private double x;
 	private double y;
-	private double radius;
-	private double mass;
+	private double radius = 10;
+	private double mass = 1;
 	private Speed speed;
 	
 	public static final Color lighter[] = {new Color (239, 41, 41), new Color (114, 159, 207),
@@ -38,8 +38,8 @@ public class Ball {
 	public Ball (double x, double y, double radius, double mass, Speed speed) {
 		this.x = x;
 		this.y = y;
-		this.radius = radius;
-		this.mass = mass;
+		setRadius (radius);
+		setMass (mass);
 		this.speed = speed;
 		this.color = color_count ++ % 8;
 	}

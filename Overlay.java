@@ -311,11 +311,11 @@ public class Overlay extends JPanel implements MouseListener, MouseMotionListene
 		}
 		
 		if (shapes[8].contains (e.getX(), e.getY())) {
-			Billiard.ball[active_ball].getSpeed ().addY (-1.0);
+			Billiard.ball[active_ball].getSpeed ().addY (1.0);
 			Billiard.queue_collision_update ();
 		}
 		if (shapes[9].contains (e.getX(), e.getY())) {
-			Billiard.ball[active_ball].getSpeed ().addY (1.0);
+			Billiard.ball[active_ball].getSpeed ().addY (-1.0);
 			Billiard.queue_collision_update ();
 		}
 		

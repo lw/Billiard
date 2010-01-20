@@ -20,8 +20,8 @@ public class Billiard extends JPanel {
 	public static final int WIDTH = 800;
 	public static final int HEIGHT = 600;
 	
-	public static final int BALLS = 12;
-	public static Ball ball[];
+	public static final int BALLS = 11;
+	public static Ball ball[] = new Ball[BALLS];
 	
 	private double next_collision;
 	private Ball first;
@@ -37,16 +37,30 @@ public class Billiard extends JPanel {
 		setOpaque (true);
 		setBackground (new Color (255, 255, 255));		
 		
-		ball = new Ball[BALLS];
-		double start = 0.0;
-		for (int i = 0; i < BALLS; i++) {
-			ball[i] = new Ball (//(i + 0.5) * BilliardWindow.WIDTH / BALLS,
-			                    start + 20+i*3 + 5,
-			                    BilliardWindow.HEIGHT / 2.0 + i * 2,
-			                    20+i*3,
-			                    5 * (i+1),
-			                    new Speed (4, 0));
-			start += 2 * (20+i*3) + 5;
+		double init_radius = 25;
+		double radius_step = 2;
+		double init_mass = 5;
+		double mass_step = 4;
+		
+		int rows = (int)Math.sqrt (BALLS);
+		int columns = (int)Math.ceil ((double)BALLS / rows);
+		int first_row = BALLS - (rows - 1) * columns;
+		int count = 0;
+		
+		for (int i = 0; i < rows; i++) {
+			int j = 0;
+			if (i == 0)
+				j = columns - first_row;
+			
+			for (; j < columns; j++) {
+				ball[count++] = new Ball ((j+0.5) * WIDTH / columns,
+				                          (i+0.5) * HEIGHT / rows,
+				                          init_radius,
+				                          init_mass,
+				                          new Speed (Math.random()*8-4, Math.random()*8-4));
+				init_radius += radius_step;
+				init_mass += mass_step;
+			}
 		}
 	}
 	
