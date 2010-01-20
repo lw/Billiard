@@ -21,9 +21,6 @@ public class BilliardWindow extends JFrame implements ActionListener {
 	private Billiard content;
 	private Overlay overlay;
 	
-	public static final int WIDTH = 800;
-	public static final int HEIGHT = 600;
-	
 	// Constructor
 	public BilliardWindow () {
 		super ();
@@ -32,8 +29,8 @@ public class BilliardWindow extends JFrame implements ActionListener {
 		setResizable (false);
 		pack ();
 		
-		setSize (WIDTH + getInsets ().left + getInsets ().right,
-		         HEIGHT + getInsets ().top + getInsets ().bottom);
+		setSize (Billiard.WIDTH + getInsets ().left + getInsets ().right,
+		         Billiard.HEIGHT + getInsets ().top + getInsets ().bottom);
 		
 		content = new Billiard ();
 		setContentPane (content);

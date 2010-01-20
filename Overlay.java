@@ -113,12 +113,12 @@ public class Overlay extends JPanel implements MouseListener, MouseMotionListene
 		
 		createFont ();
 		
-		shapes = new Path2D.Double [14];
+		shapes = new Path2D.Double [17];
 		
 		shapes[0] = new Path2D.Double (new RoundRectangle2D.Double (10, 10, 160, 160, 10, 10));
 		
-		shapes[1] = new Path2D.Double (new RoundRectangle2D.Double (20, 20, 55, 15, 7.5, 7.5));
-		shapes[2] = new Path2D.Double (new RoundRectangle2D.Double (105, 20, 55, 15, 7.5, 7.5));
+		shapes[1] = new Path2D.Double (new RoundRectangle2D.Double (20, 20, 45, 15, 7.5, 7.5));
+		shapes[2] = new Path2D.Double (new RoundRectangle2D.Double (115, 20, 45, 15, 7.5, 7.5));
 		
 		shapes[3] = new Path2D.Double (new Rectangle2D.Double (45, 60, 90, 20));
 		
@@ -182,6 +182,17 @@ public class Overlay extends JPanel implements MouseListener, MouseMotionListene
 		shapes[13].lineTo (150, 160);
 		shapes[13].closePath ();
 		
+		shapes[14] = new Path2D.Double (new RoundRectangle2D.Double (75, 20, 30, 15, 7.5, 7.5));
+		
+		shapes[15] = new Path2D.Double (new Rectangle2D.Double (85, 22.5, 4, 10));
+		shapes[15].append (new Rectangle2D.Double (91, 22.5, 4, 10), false);
+		
+		shapes[16] = new Path2D.Double ();
+		shapes[16].moveTo (86, 22.5);
+		shapes[16].lineTo (95, 27.5);
+		shapes[16].lineTo (86, 32.5);
+		shapes[16].closePath ();
+		
 		addMouseListener (this);
 		addMouseMotionListener (this);
 	}
@@ -209,7 +220,7 @@ public class Overlay extends JPanel implements MouseListener, MouseMotionListene
 		count ++;
 		
 		g2d.setColor (new Color (0, 0, 0));
-		g2d.drawString (fps+" FPS", 5, BilliardWindow.HEIGHT - 5);
+		g2d.drawString (fps+" FPS", 5, Billiard.HEIGHT - 5);
 		
 		// Draw widget
 		g2d.setColor (new Color (0, 0, 0, 150));
@@ -244,15 +255,29 @@ public class Overlay extends JPanel implements MouseListener, MouseMotionListene
 		drawStringFromCenter (g2d, "Prev", shapes[1].getBounds2D().getCenterX(), shapes[1].getBounds2D().getCenterY() - 2);
 		drawStringFromCenter (g2d, "Next", shapes[2].getBounds2D().getCenterX(), shapes[2].getBounds2D().getCenterY() - 2);
 		
+		// Play/pause
+		if (Billiard.is_paused ()) {
+			g2d.setColor (new Color (138, 226, 52));
+			g2d.fill (shapes[14]);
+			g2d.setColor (Color.WHITE);
+			g2d.fill (shapes[16]);
+		}
+		else {
+			g2d.setColor (new Color (239, 41, 41));
+			g2d.fill (shapes[14]);
+			g2d.setColor (Color.WHITE);
+			g2d.fill (shapes[15]);
+		}
+		
 		// Show data
 		g2d.setColor (new Color (255, 255, 255));
 		drawStringFromCenter (g2d, (int)(Billiard.ball[active_ball].getSpeed().getX()*100)/100.0+"",
 		                      shapes[6].getBounds2D().getMaxX() + 22.5, shapes[6].getBounds2D().getCenterY() - 2);
-		drawStringFromCenter (g2d, (int)(Billiard.ball[active_ball].getSpeed().getY()*100)/100.0+"",
+		drawStringFromCenter (g2d, (int)(Billiard.ball[active_ball].getSpeed().getY()*-100)/100.0+"",
 		                      shapes[8].getBounds2D().getMaxX() + 22.5, shapes[8].getBounds2D().getCenterY() - 2);
-		drawStringFromCenter (g2d, Billiard.ball[active_ball].getMass()+"",
+		drawStringFromCenter (g2d, (int)(Billiard.ball[active_ball].getMass()*100)/100.0+"",
 		                      shapes[10].getBounds2D().getMaxX() + 22.5, shapes[10].getBounds2D().getCenterY() - 2);
-		drawStringFromCenter (g2d, Billiard.ball[active_ball].getRadius()+"",
+		drawStringFromCenter (g2d, (int)(Billiard.ball[active_ball].getRadius()*100)/100.0+"",
 		                      shapes[12].getBounds2D().getMaxX() + 22.5, shapes[12].getBounds2D().getCenterY() - 2);
 		
 		g2d.setColor (Ball.colors[Billiard.ball[active_ball].getColorId()]);
@@ -310,6 +335,10 @@ public class Overlay extends JPanel implements MouseListener, MouseMotionListene
 			Billiard.queue_collision_update ();
 		}
 		
+		if (shapes[14].contains (e.getX(), e.getY())) {
+			Billiard.toggle_play_pause ();
+		}
+		
 		if (shapes[0].contains (e.getX(), e.getY())) {
 			is_dragged = true;
 			drag_start_x = e.getX();
@@ -333,16 +362,16 @@ public class Overlay extends JPanel implements MouseListener, MouseMotionListene
 		int delta_x = e.getX() - drag_start_x;
 		int delta_y = e.getY() - drag_start_y;
 		
-		if (shapes[0].getBounds2D().getMaxX() + delta_x > BilliardWindow.WIDTH) {
-			delta_x = BilliardWindow.WIDTH - (int)shapes[0].getBounds2D().getMaxX();
+		if (shapes[0].getBounds2D().getMaxX() + delta_x > Billiard.WIDTH) {
+			delta_x = Billiard.WIDTH - (int)shapes[0].getBounds2D().getMaxX();
 		}
 		
 		if (shapes[0].getBounds2D().getMinX() + delta_x < 0) {
 			delta_x = 0 - (int)shapes[0].getBounds2D().getMinX();
 		}
 		
-		if (shapes[0].getBounds2D().getMaxY() + delta_y > BilliardWindow.HEIGHT) {
-			delta_y = BilliardWindow.HEIGHT - (int)shapes[0].getBounds2D().getMaxY();
+		if (shapes[0].getBounds2D().getMaxY() + delta_y > Billiard.HEIGHT) {
+			delta_y = Billiard.HEIGHT - (int)shapes[0].getBounds2D().getMaxY();
 		}
 		
 		if (shapes[0].getBounds2D().getMinY() + delta_y < 0) {
@@ -355,7 +384,7 @@ public class Overlay extends JPanel implements MouseListener, MouseMotionListene
 		AffineTransform af = new AffineTransform ();
 		af.translate (delta_x, delta_y);
 				
-		for (int i = 0; i < 14; i++) {
+		for (int i = 0; i < 17; i++) {
 			shapes[i].transform (af);
 		}
 	}

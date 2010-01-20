@@ -98,8 +98,8 @@ public class Ball {
 			Billiard.queue_collision_update ();
 		}
 		
-		if (this.x > BilliardWindow.WIDTH - radius) {
-			this.x = 2 * (BilliardWindow.WIDTH - radius) - this.x;
+		if (this.x > Billiard.WIDTH - radius) {
+			this.x = 2 * (Billiard.WIDTH - radius) - this.x;
 			speed.addX (-2 * speed.getX ());
 			Billiard.queue_collision_update ();
 		}
@@ -110,8 +110,8 @@ public class Ball {
 			Billiard.queue_collision_update ();
 		}
 		
-		if (this.y > BilliardWindow.HEIGHT - radius) {
-			this.y = 2 * (BilliardWindow.HEIGHT - radius) - this.y;
+		if (this.y > Billiard.HEIGHT - radius) {
+			this.y = 2 * (Billiard.HEIGHT - radius) - this.y;
 			speed.addY (-2 * speed.getY ());
 			Billiard.queue_collision_update ();
 		}
